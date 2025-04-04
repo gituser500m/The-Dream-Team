@@ -12,7 +12,8 @@ except ModuleNotFoundError:
         print(f"SentenceTransformer package not imported! Tried loading model {reqModel}", file=sys.stderr)
         raise
 
-# luetaan dataa ja tehdään tauluja motivaatiolle versio 1
+# luetaan dataa ja tehdään tauluja motivaatiolle versio 2
+# added key word search
 def clean_data(load_name="rawData", save_name="cleaned_data_motivation"):
     # luetaan data
     bronze_data = storage.load_json(load_name)
@@ -75,6 +76,7 @@ def clean_data(load_name="rawData", save_name="cleaned_data_motivation"):
     final_merge_df["similarity_score_max_whyExperience"] = temporary_df["similarity_score_max_whyExperience"]
 
     final_merge_df['was_selected'] = was_already_chosen(final_merge_df)
+    final_merge_df['keyword_found'] = keyword_search(final_merge_df)
 
     final_merge_df.drop(
         ['whyProject','whyExperience', 'chosenBatch'], axis=1, inplace=True)
@@ -253,5 +255,31 @@ def was_already_chosen(df):
                         for i in temp:
                             df.at[i, 'was_selected'] = 1
     return df['was_selected']
+
+def keyword_search(df):
+    # finds keywords in whyProject and whyExperience fields.
+    # keywords are given in the words_of_interest list.
+    # if a keyword is found it is marked as 1 else 0.
+
+    df = df[['whyProject', 'whyExperience', 'relation']]
+    df['whyProject'] = df['whyProject'].fillna("")
+    df['whyExperience'] = df['whyExperience'].fillna("")
+    df['keyword_found'] = 0
+
+    words_of_interest = ['curious', 'interesting', 'interested', 'interest',
+                        'fascinating', 'fascinated', 'engrossing',
+                        'compelling', 'intrigued', 'intriguing',
+                        'i want to explore', 'passion', 'passionate',
+                        'motivated']
+
+    for row in df.itertuples():
+        sentences = [row.whyProject, row.whyExperience]
+        for sent in sentences:
+            for word in words_of_interest:
+                if word in sent.lower():
+                    df.at[row.Index, 'keyword_found'] = 1
+                    break
+
+    return df['keyword_found']
 
 clean_data()
