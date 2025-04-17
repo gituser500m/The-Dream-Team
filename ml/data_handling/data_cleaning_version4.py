@@ -64,6 +64,7 @@ def clean_data(load_name="rawData", save_name="cleaned_data"):
     dfstu.loc[dfstu["degreeLevelType"] == 'Other', "degreeLevelType"] = 'Other_degree'
     dfstu.loc[~dfstu["studiesField"].isin(official_fields), "studiesField"] = 'Other_field'
     dfstu = dfstu[['id','city', 'degreeLevelType', 'studiesField']]
+    dfstu = dfstu[['id','city', 'degreeLevelType', 'studiesField']]
     dfstu.rename(columns={'id':'studentId'}, inplace=True)
 
     # making the projects table
