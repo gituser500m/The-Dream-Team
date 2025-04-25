@@ -2,7 +2,7 @@ import json
 import pandas as pd
 from io import StringIO
 from utils import storage
-from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
+from sklearn.preprocessing import LabelEncoder
 
 # start here
 def clean_data(load_name="rawData", save_name="cleaned_data"):
@@ -525,7 +525,7 @@ def location_match(df):
                                 was_here = True
                                 break
 
-                if was_here == False:
+                if not was_here:
                     df.at[row.Index, 'locations'] = 0
             else:
                 df.at[row.Index, 'locations'] = 2

@@ -579,7 +579,7 @@ def location_match(df):
                                 was_here = True
                                 break
 
-                if was_here == False:
+                if not was_here:
                     df.at[row.Index, 'locations'] = 0
             else:
                 df.at[row.Index, 'locations'] = 2
